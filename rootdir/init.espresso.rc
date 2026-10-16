@@ -115,7 +115,7 @@ service smc_pa /system/bin/smc_pa_ctrl \
 
 service wpa_supplicant /vendor/bin/hw/wpa_supplicant \
     -iwlan0 -Dnl80211 -c/system/vendor/etc/wifi/wpa_supplicant.conf \
-    -I/system/etc/wifi/wpa_supplicant_overlay.conf \
+    -I/system/vendor/etc/wifi/wpa_supplicant_overlay.conf \
     -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
     #   we will start as root and wpa_supplicant will switch to user wifi
     #   after setting up the capabilities required for WEXT
@@ -123,6 +123,7 @@ service wpa_supplicant /vendor/bin/hw/wpa_supplicant \
     #   group wifi inet keystore
     class main
     socket wpa_wlan0 dgram 660 wifi wifi
+    capabilities NET_ADMIN NET_RAW
     disabled
     oneshot
 
