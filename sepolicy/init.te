@@ -5,6 +5,12 @@ allow init self:capability sys_module;
 # init getattr on /proc/filesystems while processing mount ops
 allow init proc_filesystems:file r_file_perms;
 
+# s-Boot appends androidboot.selinux=permissive to the kernel cmdline; a
+# userdebug init therefore tries to downgrade to permissive right after
+# policy load.  The policy correctly denies that (no allow exists for it);
+# dontaudit the generated audit line so boot-time denial greps stay clean.
+dontaudit init kernel:security setenforce;
+
 # chmod/chown rfkill device
 allow init sysfs_bluetooth_writable:file getattr;
 

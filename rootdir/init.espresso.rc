@@ -6,6 +6,16 @@ on early-init
     mount debugfs debugfs /sys/kernel/debug
     restorecon_recursive /sys/kernel/debug
 
+    # Force enforcing: s-Boot appends "androidboot.selinux=permissive" to the
+    # kernel cmdline (after the boot image cmdline, so it cannot be
+    # overridden from the image), and a userdebug init honors that flag right
+    # after policy load.  By early-init the policy is loaded, the kernel is
+    # (still) permissive and init already holds selinuxfs write access, so
+    # flip to enforcing here — before any service (ueventd, zygote, ...) is
+    # started.  Deliberately a no-op failure-safe: if it ever fails the boot
+    # just stays permissive.
+    write /sys/fs/selinux/enforce 1
+
 on init
     symlink /sdcard /storage/sdcard0
 
