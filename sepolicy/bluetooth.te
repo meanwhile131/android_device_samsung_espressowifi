@@ -1,0 +1,2 @@
+# Bluetooth daemon accesses /dev/rfkill
+allow bluetooth rfkill_device:chr_file rw_file_perms;

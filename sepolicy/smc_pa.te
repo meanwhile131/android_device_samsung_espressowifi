@@ -1,7 +1,21 @@
+# smc_pa: Trustonic (MobiCore) PA loader.  The service runs
+# /system/bin/smc_pa_ctrl with -c /system/bin/smc.ini reading
+# /system/bin/smc_pa.ift; both are labeled smc_data_file (see file_contexts).
 type smc_pa, domain;
 type smc_pa_exec, exec_type, file_type;
-
 init_daemon_domain(smc_pa)
 
-allow smc_pa self:capability { dac_override };
+# The mobicore device node /dev/tf_ctrl
 allow smc_pa smc_device:chr_file { read write open ioctl };
+
+# TEE payload/config files on /system (owned by drmrpc; the service runs with
+# the supplementary drmrpc group so no dac_override is needed)
+allow smc_pa smc_data_file:dir { getattr search open read };
+allow smc_pa smc_data_file:file { getattr open read };
+
+# PA state files under /data/smc (created by init for drmrpc; the dir is
+# relabeled smc_data_file by init.espresso.rc post-fs-data)
+allow smc_pa smc_data_file:dir rw_dir_perms;
+allow smc_pa smc_data_file:file create_file_perms;
+
+allow smc_pa self:process setsched;

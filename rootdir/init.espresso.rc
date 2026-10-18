@@ -44,6 +44,8 @@ on fs
 on post-fs-data
     # dmrpc
     mkdir /data/smc 0770 drmrpc drmrpc
+    restorecon /data/smc
+    restorecon_recursive /data/smc
     chown drmrpc drmrpc /data/smc/counter.bin
     chown drmrpc drmrpc /data/smc/storage.bin
     chown drmrpc drmrpc /data/smc/system.bin
@@ -94,6 +96,13 @@ on post-fs-data
     # for wifi
     mkdir /efs/wifi 0775 system radio
 
+    # Relabel the variant setup script and the Trustonic TEE payload files
+    # (file_contexts is not applied to /system at boot because /system is
+    # never restorecon'd wholesale)
+    restorecon /system/bin/init.espresso.variant.sh
+    restorecon /system/bin/smc.ini
+    restorecon /system/bin/smc_pa.ift
+
     setprop vold.post_fs_data_done 1
 
 # SMC Service
@@ -101,7 +110,7 @@ service tf_daemon /system/bin/tf_daemon \
     -d -c /system/bin/smc.ini
     class main
     user root
-    group root
+    group root drmrpc
     oneshot
     disabled
 
@@ -110,7 +119,7 @@ service smc_pa /system/bin/smc_pa_ctrl \
     start /system/bin/smc_pa.ift
     class core
     user root
-    group root
+    group root drmrpc
     oneshot
 
 service wpa_supplicant /vendor/bin/hw/wpa_supplicant \
@@ -146,7 +155,14 @@ service dock_kbd_attach /system/bin/dock_kbd_attach /dev/ttyO3
     oneshot
 
 # Set 7 inch devices as portrait device
-service variant_setup /system/bin/init.espresso.variant.sh
+service variant_setup /system/bin/sh /system/bin/init.espresso.variant.sh
+    # seclabel is required: /system files cannot be relabeled at runtime by
+    # vendor policy (restorecon on /system paths is a no-op).  With seclabel
+    # init execs /system/bin/sh into the variant_setup domain and sh then
+    # reads the script (system_file read access is granted to every domain).
+    # Note the entrypoint itself must stay on an exec_type file (shell_exec);
+    # granting entrypoint on the script (system_file) is neverallowed.
+    seclabel u:r:variant_setup:s0
     class main
     user root
     oneshot
@@ -183,7 +199,15 @@ service charger /charger
     critical
     seclabel u:r:charger:s0
 
+# loggy: persistent dmesg/logcat logging via a dedicated domain (the init
+# domain is neverallowed to open/read/write proc or sysfs files).
 service loggy /system/bin/sh /loggy.sh
     class main
     user root
+    # log: read the logd legendable buffers; cache: write the output files
+    # (the /cache directory is owned by system:cache and root is not the
+    # owner, so without the supplementary cache group root needs the
+    # neverallowed dac_override capability)
+    group root log cache
+    seclabel u:r:loggy_domain:s0
     oneshot

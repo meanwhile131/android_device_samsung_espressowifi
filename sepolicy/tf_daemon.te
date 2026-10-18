@@ -1,0 +1,11 @@
+# tf_daemon: Trustonic (MobiCore) client driver loader.  Service definition in
+# init.espresso.rc (currently disabled; kept as insurance).  Reads the TEE
+# config /system/bin/smc.ini (labeled smc_data_file) and manages /data/smc.
+type tf_daemon, domain;
+type tf_daemon_exec, exec_type, file_type;
+init_daemon_domain(tf_daemon)
+
+allow tf_daemon smc_device:chr_file rw_file_perms;
+allow tf_daemon smc_data_file:dir rw_dir_perms;
+allow tf_daemon smc_data_file:file create_file_perms;
+allow tf_daemon self:process setsched;

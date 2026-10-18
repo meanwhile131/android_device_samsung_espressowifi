@@ -2,8 +2,25 @@
 allow init kernel:system module_request;
 allow init self:capability sys_module;
 
+# init getattr on /proc/filesystems while processing mount ops
+allow init proc_filesystems:file r_file_perms;
+
 # chmod/chown rfkill device
 allow init sysfs_bluetooth_writable:file getattr;
+
+# init chmod/chown access to sysfs files not covered by stock policy.
+# setattr is not blocked by the stock neverallow (only open/read/write are).
+allow init sysfs:file setattr;
+allow init { sysfs_block sysfs_input sysfs_hardware sysfs_bluetooth_writable sysfs_gadget sysfs_wlan_fwpath }:file setattr;
+
+# init write access to device-specific sysfs files.
+allow init sysfs_input:file w_file_perms;
+allow init sysfs_block:file w_file_perms;
+allow init sysfs_ksm:file w_file_perms;
+allow init sysfs_gadget:file w_file_perms;
+
+# init creates the gps control socket (socket gps seqpacket 0660 gps system)
+allow init gps_socket:sock_file { create setattr unlink };
 
 # allow creating /sdcard symlink
 allow init tmpfs:lnk_file create;

@@ -5,3 +5,10 @@ allow system_server gps_data_file:fifo_file create_file_perms;
 
 allow system_server efs_file:dir search;
 allow system_server sysfs_board_type:file r_file_perms;
+allow system_server ion_device:chr_file write;
+
+# batterystats reads /proc/wakelocks
+allow system_server proc_wakelocks:file r_file_perms;
+
+# system_server writes to input sysfs (enable)
+allow system_server sysfs_input:file write;

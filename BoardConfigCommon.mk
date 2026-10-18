@@ -39,7 +39,8 @@ BOARD_KERNEL_IMAGE_NAME := zImage
 BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_BASE := 0x40000000
 BOARD_KERNEL_CMDLINE := androidboot.hardware=espresso
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+# SELinux now boots enforcing: device policy fixes live in the
+# BOARD_SEPOLICY_DIRS (sepolicy/ and sepolicy-custom/).
 
 TARGET_USES_LEGACY_ADB_INTERFACE := true
 
@@ -88,8 +89,8 @@ BOARD_HAVE_BLUETOOTH_BCM := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/samsung/espressowifi/bluetooth
 
 # SELinux
-# BOARD_SEPOLICY_DIRS += \		     
-    # device/samsung/espressowifi/sepolicy
+BOARD_SEPOLICY_DIRS += \
+    device/samsung/espressowifi/sepolicy
 
 DEVICE_MANIFEST_FILE += device/samsung/espressowifi/manifest.xml
 

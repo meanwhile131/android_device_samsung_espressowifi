@@ -5,6 +5,11 @@ type variant_setup_exec, exec_type, file_type;
 init_daemon_domain(variant_setup)
 set_prop(variant_setup, rotation_prop)
 
+# Because /system labels cannot be changed at runtime, the service is started
+# with "seclabel u:r:variant_setup:s0"; init execs it via /system/bin/sh, so
+# grant the init -> variant_setup transition on the shell interpreter.
+domain_trans(init, shell_exec, variant_setup)
+
 # Run init.espresso.variant.sh
 allow variant_setup shell_exec:file rx_file_perms;
 allow variant_setup toolbox_exec:file rx_file_perms;
@@ -22,4 +27,9 @@ allow variant_setup sysfs:file rw_file_perms;
 allow variant_setup sysfs:dir r_dir_perms;
 allow variant_setup sysfs:lnk_file { getattr };
 
-allow variant_setup self:capability dac_override;
+# variant_setup runs as root; dac_override is neverallowed outside
+# dac_override_allowed (public/domain.te).
+
+# The script forks child tools and uses command substitution pipes
+allow variant_setup self:process { fork siginh rlimitinh noatsecure };
+allow variant_setup self:fifo_file rw_file_perms;

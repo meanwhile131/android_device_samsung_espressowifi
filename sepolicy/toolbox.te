@@ -1,0 +1,4 @@
+# toolbox helpers used by device scripts / debug sessions
+# loggy.sh-style scripts may read the kernel ring buffer
+allow toolbox kmsg_device:chr_file r_file_perms;
+allow toolbox kernel:system syslog_read;

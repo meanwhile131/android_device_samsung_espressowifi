@@ -1,0 +1,43 @@
+# loggy_domain: device-local domain for /loggy.sh, the persistent dmesg/logcat
+# logger started by init.espresso.rc.  The init domain is neverallowed to
+# open/read/write proc or sysfs files (public/init.te), so the script runs in
+# its own domain instead.  The service is started with an explicit
+# "seclabel u:r:loggy_domain:s0"; init execs /system/bin/sh into that context,
+# which needs a transition grant plus an entrypoint on the interpreter.
+type loggy_domain, domain;
+
+# init -> loggy_domain transition on exec of /system/bin/sh (the service
+# binary); generated rules also give loggy_domain read access to the shell.
+domain_trans(init, shell_exec, loggy_domain)
+# loggy.sh is opened (read) by the shell and may also be exec'd directly.
+allow loggy_domain loggy_exec:file { getattr open read execute map entrypoint };
+
+# The script forks subcommands (logcat, dmesg, date) which are exec'd
+# without a domain transition, so execute_no_trans is required.
+allow loggy_domain self:process { fork siginh rlimitinh noatsecure setsched };
+allow loggy_domain logcat_exec:file { getattr open read execute execute_no_trans map };
+allow loggy_domain toolbox_exec:file { getattr open read execute execute_no_trans map };
+
+# Pipes created by the shell (e.g. the `date` command substitution)
+allow loggy_domain self:fifo_file rw_file_perms;
+
+# Logging output targets (logcat -f /cache/..., dmesg > /cache/kmsg_*.txt)
+allow loggy_domain cache_file:dir rw_dir_perms;
+allow loggy_domain cache_file:file create_file_perms;
+
+# dmesg needs the kernel ring buffer
+allow loggy_domain kernel:system syslog_read;
+allow loggy_domain self:global_capability2_class_set syslog;
+allow loggy_domain kmsg_device:chr_file r_file_perms;
+
+# logcat tries to raise its priority at startup; harmless if denied
+dontaudit loggy_domain self:global_capability_class_set sys_nice;
+
+# The script itself lives on the ramdisk rootfs: file_contexts labels do not
+# reach the ramdisk at runtime (the file keeps the generic rootfs type, it is
+# not relabeled to loggy_exec).  Reading rootfs files is fine, but SELinux
+# neverallows writing them.
+allow loggy_domain rootfs:file { getattr open read };
+
+# logcat needs the logd reader socket
+unix_socket_connect(loggy_domain, logdr, logd)

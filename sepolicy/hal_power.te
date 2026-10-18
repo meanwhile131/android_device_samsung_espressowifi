@@ -1,0 +1,4 @@
+# Power HAL (android.hardware.power@1.0-service) adjusts CPU frequency and
+# sleep state through sysfs.
+allow hal_power_default sysfs_devices_system_cpu:file write;
+allow hal_power_default sysfs_power:file { open write };

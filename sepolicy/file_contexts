@@ -4,7 +4,6 @@
 
 # DRM
 /dev/tf_ctrl                                u:object_r:smc_device:s0
-/system/bin/smc_pa_ctrl                     u:object_r:smc_pa_exec:s0
 
 # GPS
 /system/bin/gpsd                            u:object_r:gpsd_exec:s0
@@ -42,3 +41,45 @@
 
 # sysfs
 /sys/board/type                             u:object_r:sysfs_board_type:s0
+
+# Battery / charger (healthd)
+/sys/class/power_supply(/.*)?               u:object_r:sysfs_batteryinfo:s0
+/sys/devices/platform/i2c-gpio.5/i2c-5/5-0006/power_supply(/.*)? u:object_r:sysfs_batteryinfo:s0
+/sys/devices/platform/i2c-gpio.7/i2c-7/7-0036/power_supply(/.*)? u:object_r:sysfs_batteryinfo:s0
+
+# storaged
+/sys/devices/platform/omap_hsmmc.1/mmc_host/mmc0/mmc0:0001/block/mmcblk0/queue/stat u:object_r:sysfs_disk_stat:s0
+
+# bcmdhd firmware path (wifi HAL)
+/sys/module/bcmdhd/parameters/firmware_path  u:object_r:sysfs_wlan_fwpath:s0
+
+# Input sensors (init writes distortion etc.)
+/sys/devices/platform/omap_i2c.4/i2c-4/4-002e/input(/.*)? u:object_r:sysfs_input:s0
+
+# Block queue (init writes read_ahead_kb)
+/sys/devices/platform/omap_hsmmc.1/mmc_host/mmc0/mmc0:0001/block/mmcblk0/queue(/.*)? u:object_r:sysfs_block:s0
+
+# KSM (init writes ksm parameters)
+/sys/kernel/mm/ksm(/.*)?                    u:object_r:sysfs_ksm:s0
+
+# USB gadget
+/sys/devices/platform/musb-omap2430/musb-hdrc/gadget/lun0/file u:object_r:sysfs_gadget:s0
+
+# rfkill device (bluetooth + wifi supplicant)
+/dev/rfkill                                  u:object_r:rfkill_device:s0
+
+# gps control socket (created by init)
+/dev/socket/gps                              u:object_r:gps_socket:s0
+
+# loggy.sh persistent-logging script (copied to the ramdisk root)
+/loggy\.sh                                   u:object_r:loggy_exec:s0
+
+# Trustonic (MobiCore) TEE payload files (read by smc_pa / tf_daemon,
+# owned by drmrpc on /system)
+/system/bin/smc\.ini                         u:object_r:smc_data_file:s0
+/system/bin/smc_pa\.ift                      u:object_r:smc_data_file:s0
+/system/bin/smc_pa_ctrl                      u:object_r:smc_pa_exec:s0
+/system/bin/tf_daemon                        u:object_r:tf_daemon_exec:s0
+
+# Trustonic PA state dir (relabeled by init post-fs-data)
+/data/smc(/.*)?                             u:object_r:smc_data_file:s0

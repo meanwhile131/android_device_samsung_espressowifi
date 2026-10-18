@@ -1,0 +1,3 @@
+# SurfaceFlinger: switch state and ION device
+allow surfaceflinger sysfs_switch:dir search;
+allow surfaceflinger ion_device:chr_file write;
