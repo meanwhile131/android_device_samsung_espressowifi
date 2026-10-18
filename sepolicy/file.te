@@ -1,6 +1,6 @@
 # Filesystem types
-type sensors_data_file, file_type, data_file_type;
-type firmware_ducati, file_type; 
+type sensors_data_file, file_type, data_file_type, core_data_file_type;
+type firmware_ducati, file_type;
 type sysfs_board_type, fs_type, sysfs_type;
 type gps_data_file, file_type, data_file_type;
 type gps_socket, file_type;
@@ -11,4 +11,4 @@ type sysfs_block, fs_type, sysfs_type;
 type sysfs_ksm, fs_type, sysfs_type;
 type sysfs_gadget, fs_type, sysfs_type;
 type loggy_exec, exec_type, file_type;
-type smc_data_file, file_type, data_file_type;
+type smc_data_file, file_type, data_file_type, core_data_file_type;
