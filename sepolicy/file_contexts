@@ -42,3 +42,37 @@
 
 # sysfs
 /sys/board/type                             u:object_r:sysfs_board_type:s0
+
+# Battery (healthd)
+/sys/devices/platform/i2c-gpio\.[0-9]+/.*/power_supply(/.*)?   u:object_r:sysfs_batteryinfo:s0
+
+# Disk statistics (storaged)
+/sys/devices/platform/omap_hsmmc\.[0-9]+/.*/block/mmcblk[0-9]+/stat   u:object_r:sysfs_disk_stat:s0
+
+# I/O scheduler tuning done by init
+/sys/devices/platform/omap_hsmmc\.[0-9]+/.*/block/mmcblk[0-9]+/queue(/.*)?   u:object_r:sysfs_espresso:s0
+
+# WiFi
+/sys/module/bcmdhd(/.*)?                    u:object_r:sysfs_wifi:s0
+/dev/rfkill                                 u:object_r:rfkill_device:s0
+/sys/devices/platform/bcm4330_bluetooth/rfkill(/.*)?   u:object_r:sysfs_bluetooth_writable:s0
+/sys/devices/platform/omap_hsmmc\.[0-9]+/.*/rfkill[0-9]+(/.*)?   u:object_r:sysfs_espresso:s0
+
+# USB gadget (mass storage backing file and friends)
+/sys/devices/platform/musb-omap2430/musb-hdrc/gadget(/.*)?   u:object_r:sysfs_espresso:s0
+
+# Input devices / sensors
+/sys/devices/virtual/input(/.*)?            u:object_r:sysfs_input:s0
+/sys/devices/virtual/sensors(/.*)?          u:object_r:sysfs_input:s0
+/sys/devices/platform/omap_i2c\.[0-9]+/i2c-[0-9]+/[0-9]+-[0-9a-f]+/input(/.*)?   u:object_r:sysfs_input:s0
+
+# GPS
+/dev/socket/gps                             u:object_r:gps_socket:s0
+/sys/devices/virtual/gpio/gpio173(/.*)?     u:object_r:sysfs_gps:s0
+/sys/devices/virtual/gpio/gpio178(/.*)?     u:object_r:sysfs_gps:s0
+/data/gps(/.*)?                             u:object_r:gps_data_file:s0
+
+# sysfs nodes configured by init (switch/jig, backlight, KSM)
+/sys/devices/virtual/sec(/.*)?              u:object_r:sysfs_espresso:s0
+/sys/devices/omapdss/display0(/.*)?         u:object_r:sysfs_espresso:s0
+/sys/kernel/mm/ksm(/.*)?                    u:object_r:sysfs_espresso:s0

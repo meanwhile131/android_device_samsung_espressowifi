@@ -1,0 +1,2 @@
+# /proc/wakelocks is read by batterystats on pre-3.10 kernels
+genfscon proc /wakelocks                        u:object_r:proc_wakelocks:s0

@@ -3,7 +3,27 @@ allow init kernel:system module_request;
 allow init self:capability sys_module;
 
 # chmod/chown rfkill device
-allow init sysfs_bluetooth_writable:file getattr;
+allow init sysfs_bluetooth_writable:file { getattr setattr };
+allow init rfkill_device:chr_file { getattr setattr };
+allow init sysfs_espresso:dir r_dir_perms;
+allow init sysfs_espresso:file { rw_file_perms setattr };
+allow init sysfs_espresso:lnk_file r_file_perms;
+
+# USB gadget attributes
+allow init sysfs_android_usb:dir r_dir_perms;
+allow init sysfs_android_usb:file { rw_file_perms setattr };
+allow init sysfs_android_usb:lnk_file r_file_perms;
+
+# Input device / sensor attributes tuned by init.espresso.sensors.rc
+allow init sysfs_input:dir r_dir_perms;
+allow init sysfs_input:file { rw_file_perms setattr };
+allow init sysfs_wifi:file { rw_file_perms setattr };
+allow init sysfs_gps:file { rw_file_perms setattr };
+allow init sysfs_hardware:file setattr;
+
+# /proc/sys/vm tunables written by init.espresso.rc
+allow init proc_filesystems:file r_file_perms;
+allow init proc:file { getattr open read write };
 
 # allow creating /sdcard symlink
 allow init tmpfs:lnk_file create;
@@ -12,3 +32,12 @@ allow init tmpfs:lnk_file create;
 allow init debugfs_trace_marker:file getattr;
 
 allow init block_device:lnk_file { create_file_perms relabelfrom };
+
+# Dynamic sysfs nodes (USB gadget, rfkill) can show up after ueventd labeled
+# their parent device; /sys is relabeled in post-fs-data (init.espresso.rc)
+allow init sysfs:dir r_dir_perms;
+
+# Directories created by init.espresso.rc under /data
+allow init system_data_file:dir create_dir_perms;
+allow init system_data_file:file create_file_perms;
+allow init system_data_file:lnk_file r_file_perms;

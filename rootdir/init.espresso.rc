@@ -6,6 +6,11 @@ on early-init
     mount debugfs debugfs /sys/kernel/debug
     restorecon_recursive /sys/kernel/debug
 
+    # Label sysfs nodes created before init runs (ueventd only labels the
+    # device/asynchronous ones it sees, and USB gadget/rfkill nodes are
+    # otherwise written while still labeled as plain sysfs)
+    restorecon_recursive /sys
+
 on init
     symlink /sdcard /storage/sdcard0
 
@@ -110,7 +115,7 @@ service smc_pa /system/bin/smc_pa_ctrl \
     start /system/bin/smc_pa.ift
     class core
     user root
-    group root
+    group root drmrpc
     oneshot
 
 service wpa_supplicant /vendor/bin/hw/wpa_supplicant \
@@ -181,8 +186,3 @@ service charger /charger
     class charger
     critical
     seclabel u:r:charger:s0
-
-service loggy /system/bin/sh /loggy.sh
-    class main
-    user root
-    oneshot

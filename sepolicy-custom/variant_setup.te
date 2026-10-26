@@ -22,4 +22,7 @@ allow variant_setup sysfs:file rw_file_perms;
 allow variant_setup sysfs:dir r_dir_perms;
 allow variant_setup sysfs:lnk_file { getattr };
 
-allow variant_setup self:capability dac_override;
+# Set touchscreen orientation (sysfs_espresso covers /sys/devices/virtual/sec)
+allow variant_setup sysfs_espresso:file { rw_file_perms setattr };
+allow variant_setup sysfs_espresso:dir r_dir_perms;
+

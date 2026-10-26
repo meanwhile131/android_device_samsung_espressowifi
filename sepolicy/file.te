@@ -5,3 +5,18 @@ type sysfs_board_type, fs_type, sysfs_type;
 type gps_data_file, file_type, data_file_type;
 type gps_socket, file_type;
 type sysfs_gps, fs_type, sysfs_type, mlstrustedobject;
+
+# WiFi (bcmdhd firmware path)
+type sysfs_wifi, fs_type, sysfs_type;
+
+# Misc sysfs nodes configured at boot (switch/jig, USB, backlight, rfkill...)
+type sysfs_espresso, fs_type, sysfs_type;
+
+# Device nodes
+type rfkill_device, dev_type;
+
+# Input device / sensor sysfs nodes tuned by init.espresso.sensors.rc
+type sysfs_input, fs_type, sysfs_type;
+
+# /proc/wakelocks, read by batterystats on pre-3.10 kernels
+type proc_wakelocks, fs_type, proc_type;

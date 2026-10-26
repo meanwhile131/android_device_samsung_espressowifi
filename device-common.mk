@@ -145,10 +145,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.vibrator@1.0-impl
 
-# loggy
-PRODUCT_COPY_FILES += \
-     $(LOCAL_PATH)/rootdir/loggy.sh:root/loggy.sh
-
 # GPS shim
 PRODUCT_PACKAGES += \
     libshim

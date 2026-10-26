@@ -1,0 +1,8 @@
+# liblights reads the switch/backlight class devices
+allow surfaceflinger sysfs_switch:dir r_dir_perms;
+allow surfaceflinger sysfs_switch:file r_file_perms;
+allow surfaceflinger sysfs_espresso:dir r_dir_perms;
+allow surfaceflinger sysfs_espresso:file r_file_perms;
+
+# Legacy ION allocator
+allow surfaceflinger ion_device:chr_file rw_file_perms;

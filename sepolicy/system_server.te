@@ -5,3 +5,15 @@ allow system_server gps_data_file:fifo_file create_file_perms;
 
 allow system_server efs_file:dir search;
 allow system_server sysfs_board_type:file r_file_perms;
+
+# batterystats reads /proc/wakelocks on pre-3.10 kernels
+allow system_server proc_wakelocks:file r_file_perms;
+
+# Lights HAL (embedded in system_server) writes the panel brightness
+allow system_server sysfs_espresso:file rw_file_perms;
+
+# SensorService enables/disables input devices
+allow system_server sysfs_input:file rw_file_perms;
+
+# Legacy ION allocator
+allow system_server ion_device:chr_file rw_file_perms;
