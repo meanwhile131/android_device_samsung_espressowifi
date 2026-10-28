@@ -61,8 +61,8 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 5003787264
 BOARD_FLASH_BLOCK_SIZE := 4096
 
 # Enable dex pre-optimization with PIC
-# WITH_DEXPREOPT := true
-# WITH_DEXPREOPT_PIC := true
+WITH_DEXPREOPT := true
+WITH_DEXPREOPT_PIC := true
 
 # Configure jemalloc for low-memory
 MALLOC_SVELTE := true
