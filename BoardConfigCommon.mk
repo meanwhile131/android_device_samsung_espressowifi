@@ -81,6 +81,16 @@ WIFI_DRIVER_FW_PATH_P2P          := "/system/etc/wifi/bcmdhd_p2p.bin"
 WIFI_DRIVER_MODULE_NAME          := "bcmdhd"
 WIFI_BAND                        := 802_11_ABG
 
+# The 3.4 kernel resolves a route's gateway with a FIB lookup that never consults
+# the 'main' table (netd flushes the kernel's default "from all lookup main" rule
+# and installs only "iif lo" rules, which the gateway lookup skips because it
+# leaves flowi4_iif unset). Without a rule pointing at the main table, adding the
+# default route via the gateway fails with ENETUNREACH ("Network is unreachable"),
+# so ConnectedService can never install the default route and WiFi has no internet.
+# This tells netd to install a rule looking up the main table for directly
+# connected routes (netd's NEEDS_NETD_DIRECT_CONNECT_RULE, for kernels < 3.6).
+TARGET_NEEDS_NETD_DIRECT_CONNECT_RULE := true
+
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
